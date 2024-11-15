@@ -5,9 +5,9 @@ cut_point1_x = 63  # نقطه اول
 cut_point2_x = 117  # نقطه دوم
 
 # اجرای عملیات برش بر روی هر تصویر
-for i in range(1, 500):
+for i in range(1, 4000):
     # باز کردن تصویر
-    image = Image.open(f'images/images/{i}.png')
+    image = Image.open(f'images/{i}.png')
 
     # گرفتن ابعاد تصویر
     width, height = image.size
