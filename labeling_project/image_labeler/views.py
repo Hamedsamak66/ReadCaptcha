@@ -3,7 +3,9 @@ from .models import ImageData
 from .forms import ImageLabelForm
 
 def label_image(request, image_id):
+   
     image_data = get_object_or_404(ImageData, pk=image_id)
+    print(image_data)
     form = ImageLabelForm(request.POST or None, instance=image_data)
 
     if request.method == 'POST' and form.is_valid():
