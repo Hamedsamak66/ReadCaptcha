@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Label Image</title>
+    
 </head>
 <body>
     <h1>Label Image</h1>
@@ -14,4 +15,13 @@
         <button type="submit">Save Label</button>
     </form>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputField = document.getElementById("id_label"); // جایگزین با ID مناسب
+        if (inputField) {
+            inputField.focus();
+        }
+    });
+</script>
+
 </html>
