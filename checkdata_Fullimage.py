@@ -3,8 +3,44 @@ from PIL import Image
 import os
 import cv2
 import numpy as np
+def is_image_mostly_white(image_path, white_threshold=0.95):
+    try:
+        img = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        if img is None:
+            raise ValueError("Image could not be loaded.")
+        
+        # Calculate the total number of pixels
+        total_pixels = img.shape[0] * img.shape[1]
+        
+        # Create a mask where all white pixels are marked
+        white_mask = cv2.inRange(img, (255, 255, 255), (255, 255, 255))
+        
+        # Calculate the number of white pixels
+        white_pixels = cv2.countNonZero(white_mask)
+        
+        # Calculate the ratio of white pixels
+        white_ratio = white_pixels / total_pixels
+        return white_ratio >= white_threshold
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+def is_image_white(image_path):
+    try:
+        # Load the image
+        img = cv2.imread(image_path)
 
+        # Validate that the image is loaded
+        if img is None:
+            raise ValueError("Image could not be loaded.")
 
+        # Check if all pixels are white (255, 255, 255)
+        if np.all(img == 255):
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
 def remove_lines_and_background(image):
     # تبدیل تصویر به فضای رنگی RGB (در صورت وجود کانال آلفا)
     if image.shape[2] == 4:  # بررسی وجود کانال آلفا
@@ -58,8 +94,8 @@ def find_white_line(image, start_index):
 
 cut_point1_x = 63  # نقطه اول
 cut_point2_x = 117  # نقطه دوم
-img = 22160
-image = Image.open(f'images/images/{img}.png')
+img = 129
+image = Image.open(f'images/{img}.png')
 width, height = image.size
 # برش تصویر
 slice1_box = (0, 0, cut_point1_x, height)
@@ -113,16 +149,20 @@ for i in range(1,3):
             cv2.imwrite(f'{img}_{i}_1.png', left_image)
             cv2.imwrite(f'{img}_{i}_2.png', right_image)
 stack = []
+number = ''
 for i in range(1,3):
+    number = ''
     for j in range(1,3):
-        url = 'http://127.0.0.1:5000/predict'
-        files = {'file': open(f'{img}_{i}_{j}.png', 'rb')}
-        response = requests.post(url, files=files)
-        print(response.json())
-        if j == 1:
-            temp = str(response.json())
-        if j == 2:
-            stack.append(str(temp) + str(response.json()))
+        if is_image_mostly_white(f'{img}_{i}_{j}.png'):
+            continue
+        else:    
+            url = 'http://127.0.0.1:5000/predict'
+            files = {'file': open(f'{img}_{i}_{j}.png', 'rb')}
+            response = requests.post(url, files=files)
+            
+            res = response.json()["predicted_class"]
+            number = str(number) + str(res)
+    stack.append(number)
     if i == 1:
         stack.append('+')
         temp = 0
@@ -130,10 +170,22 @@ for i in range(1,3):
 # متغیر برای نگه‌داری مجموع دو بخش
 sum_part1 = 0
 sum_part2 = 0
-
+#print(stack)
+#exit()
 # نشانگر وضعیت برای تعیین اینکه کدام بخش در حال پردازش است
 first_part = True
+for item in stack:
+    if item == '+':
+        # زمانی که به عملگر جمع می‌رسیم، بخش دوم شروع می‌شود
+        first_part = False
+        continue
+    if first_part:
+        sum_part1 = item
+    else:
+        sum_part2 = item
 
+
+'''
 for item in stack:
     if item == '+':
         # زمانی که به عملگر جمع می‌رسیم، بخش دوم شروع می‌شود
@@ -146,15 +198,15 @@ for item in stack:
             sum_part1 += item['predicted_class']
         else:
             sum_part2 += item['predicted_class']
-
+'''
 # محاسبه مجموع نهایی
-total = sum_part1 + sum_part2
+total = int(sum_part1) + int(sum_part2)
 
 # نمایش نتایج
 print(f"مجموع بخش اول: {sum_part1}")
 print(f"مجموع بخش دوم: {sum_part2}")
 print(f"مجموع کلی: {total}")
-print(stack)
+#print(stack)
         
 
     

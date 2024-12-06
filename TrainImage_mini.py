@@ -69,7 +69,7 @@ model = create_simple_cnn(X_train[0].shape)
 
 # 6. آموزش مدل
 model.fit(X_train, y_train, epochs=30, batch_size=32, validation_split=0.1)
-model.save('trained_model.h5')
+model.save('trained_model_with_len2.h5')
 # 7. ارزیابی مدل
 y_pred = model.predict(X_test)
 y_pred_classes = np.argmax(y_pred, axis=1)

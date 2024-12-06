@@ -4,7 +4,7 @@ import cv2
 unique_colors = set()
 
 for i in range(1, 500):
-    img = cv2.imread(f'images/images/{i}.png')
+    img = cv2.imread(f'images/{i}.png')
     if img is not None:  # بررسی اینکه آیا تصویر به درستی خوانده شده است
         (b, g, r) = img[0, 0]
         # اضافه کردن RGB به مجموعه

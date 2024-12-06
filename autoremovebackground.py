@@ -18,7 +18,7 @@ def preprocess_image(image):
 reference_color = [133, 233, 158]
 tolerance = np.array([20, 100, 100])  # تنظیم تلورانس برای عملکرد بهتر
 
-img = cv2.imread('AfterCrop/4_1.png')
+img = cv2.imread('AfterCrop/3_1.png')
 
 if img is None:
     print("Error loading image.")
